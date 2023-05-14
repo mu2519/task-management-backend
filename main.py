@@ -52,6 +52,17 @@ def login(
     return response
 
 
+@app.get("/users/")
+def get_user_tasks(
+    session_id: Annotated[UUID, Cookie()],
+    db: Session = Depends(get_db),
+):
+    username = crud.lookup_session(db=db, session_id=session_id)
+    if username is None:
+        raise HTTPException(status_code=403)
+    return crud.read_user_tasks(db=db, username=username)
+
+
 @app.post("/tasks/", response_model=schemas.Task)
 def create_task(
     task: schemas.TaskCreate,

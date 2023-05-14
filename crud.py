@@ -29,6 +29,10 @@ def read_user(db: Session, username: str):
     return db.query(models.User).filter(models.User.username == username).one_or_none()
 
 
+def read_user_tasks(db: Session, username: str):
+    return db.query(models.Task).filter(models.Task.username == username).all()
+
+
 def create_task(db: Session, task: schemas.TaskCreate, task_id: UUID, username: str):
     db_task = models.Task(**task.dict(), task_id=task_id, username=username)
     db.add(db_task)
