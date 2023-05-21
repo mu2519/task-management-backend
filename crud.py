@@ -33,20 +33,20 @@ def read_user_tasks(db: Session, username: str):
     return db.query(models.Task).filter(models.Task.username == username).all()
 
 
-def create_task(db: Session, task: schemas.TaskCreate, task_id: UUID, username: str):
-    db_task = models.Task(**task.dict(), task_id=task_id, username=username)
+def create_task(db: Session, task: schemas.TaskCreate, id: UUID, username: str):
+    db_task = models.Task(**task.dict(), id=id, username=username)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
     return db_task
 
 
-def read_task(db: Session, task_id: UUID):
-    return db.query(models.Task).filter(models.Task.task_id == task_id).one_or_none()
+def read_task(db: Session, id: UUID):
+    return db.query(models.Task).filter(models.Task.id == id).one_or_none()
 
 
-def update_task(db: Session, task_id: UUID, task: schemas.TaskUpdate):
-    db_task = db.query(models.Task).filter(models.Task.task_id == task_id).one()
+def update_task(db: Session, id: UUID, task: schemas.TaskUpdate):
+    db_task = db.query(models.Task).filter(models.Task.id == id).one()
     if task.title is not None:
         db_task.title = task.title
     if task.description is not None:
@@ -56,7 +56,7 @@ def update_task(db: Session, task_id: UUID, task: schemas.TaskUpdate):
     db.commit()
 
 
-def delete_task(db: Session, task_id: UUID):
-    db_task = db.query(models.Task).filter(models.Task.task_id == task_id).one()
+def delete_task(db: Session, id: UUID):
+    db_task = db.query(models.Task).filter(models.Task.id == id).one()
     db.delete(db_task)
     db.commit()

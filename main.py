@@ -72,20 +72,20 @@ def create_task(
     username = crud.lookup_session(db=db, session_id=session_id)
     if username is None:
         raise HTTPException(status_code=403)
-    task_id = uuid4()
-    return crud.create_task(db=db, task=task, task_id=task_id, username=username)
+    id = uuid4()
+    return crud.create_task(db=db, task=task, id=id, username=username)
 
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{id}")
 def read_task(
-    task_id: UUID,
+    id: UUID,
     session_id: Annotated[UUID, Cookie()],
     db: Session = Depends(get_db)
 ):
     username = crud.lookup_session(db=db, session_id=session_id)
     if username is None:
         raise HTTPException(status_code=403)
-    db_task = crud.read_task(db=db, task_id=task_id)
+    db_task = crud.read_task(db=db, id=id)
     if db_task is None:
         raise HTTPException(status_code=404)
     if db_task.username != username:
@@ -93,9 +93,9 @@ def read_task(
     return db_task
 
 
-@app.put("/tasks/{task_id}")
+@app.put("/tasks/{id}")
 def update_task(
-    task_id: UUID,
+    id: UUID,
     task: schemas.TaskUpdate,
     session_id: Annotated[UUID, Cookie()],
     db: Session = Depends(get_db),
@@ -103,26 +103,26 @@ def update_task(
     username = crud.lookup_session(db=db, session_id=session_id)
     if username is None:
         raise HTTPException(status_code=403)
-    db_task = crud.read_task(db=db, task_id=task_id)
+    db_task = crud.read_task(db=db, id=id)
     if db_task is None:
         raise HTTPException(status_code=404)
     if db_task.username != username:
         raise HTTPException(status_code=403)
-    crud.update_task(db=db, task_id=task_id, task=task)
+    crud.update_task(db=db, id=id, task=task)
 
 
-@app.delete("/tasks/{task_id}")
+@app.delete("/tasks/{id}")
 def delete_task(
-    task_id: UUID,
+    id: UUID,
     session_id: Annotated[UUID, Cookie()],
     db: Session = Depends(get_db),
 ):
     username = crud.lookup_session(db=db, session_id=session_id)
     if username is None:
         raise HTTPException(status_code=403)
-    db_task = crud.read_task(db=db, task_id=task_id)
+    db_task = crud.read_task(db=db, id=id)
     if db_task is None:
         raise HTTPException(status_code=404)
     if db_task.username != username:
         raise HTTPException(status_code=403)
-    crud.delete_task(db=db, task_id=task_id)
+    crud.delete_task(db=db, id=id)

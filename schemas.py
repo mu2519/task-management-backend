@@ -1,19 +1,10 @@
 from datetime import datetime
-from uuid import UUID
 from pydantic import BaseModel
 
 
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     username: str
-
-
-class UserCreate(UserBase):
     password: str
-
-
-class User(UserBase):
-    class Config:
-        orm_mode = True
 
 
 class TaskCreate(BaseModel):
