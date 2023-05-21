@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -15,18 +16,13 @@ class User(UserBase):
         orm_mode = True
 
 
-class TaskBase(BaseModel):
+class TaskCreate(BaseModel):
     title: str
     description: str
+    deadline: datetime | None = None
 
 
-class TaskCreate(TaskBase):
-    pass
-
-
-class Task(TaskBase):
-    task_id: UUID
-    username: str
-
-    class Config:
-        orm_mode = True
+class TaskUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    deadline: datetime | None = None

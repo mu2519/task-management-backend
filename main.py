@@ -16,7 +16,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["GET", "POST"],
+    allow_methods=["POST", "GET", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
@@ -63,7 +63,7 @@ def get_user_tasks(
     return crud.read_user_tasks(db=db, username=username)
 
 
-@app.post("/tasks/", response_model=schemas.Task)
+@app.post("/tasks/")
 def create_task(
     task: schemas.TaskCreate,
     session_id: Annotated[UUID, Cookie()],
@@ -91,3 +91,38 @@ def read_task(
     if db_task.username != username:
         raise HTTPException(status_code=403)
     return db_task
+
+
+@app.put("/tasks/{task_id}")
+def update_task(
+    task_id: UUID,
+    task: schemas.TaskUpdate,
+    session_id: Annotated[UUID, Cookie()],
+    db: Session = Depends(get_db),
+):
+    username = crud.lookup_session(db=db, session_id=session_id)
+    if username is None:
+        raise HTTPException(status_code=403)
+    db_task = crud.read_task(db=db, task_id=task_id)
+    if db_task is None:
+        raise HTTPException(status_code=404)
+    if db_task.username != username:
+        raise HTTPException(status_code=403)
+    crud.update_task(db=db, task_id=task_id, task=task)
+
+
+@app.delete("/tasks/{task_id}")
+def delete_task(
+    task_id: UUID,
+    session_id: Annotated[UUID, Cookie()],
+    db: Session = Depends(get_db),
+):
+    username = crud.lookup_session(db=db, session_id=session_id)
+    if username is None:
+        raise HTTPException(status_code=403)
+    db_task = crud.read_task(db=db, task_id=task_id)
+    if db_task is None:
+        raise HTTPException(status_code=404)
+    if db_task.username != username:
+        raise HTTPException(status_code=403)
+    crud.delete_task(db=db, task_id=task_id)

@@ -43,3 +43,20 @@ def create_task(db: Session, task: schemas.TaskCreate, task_id: UUID, username: 
 
 def read_task(db: Session, task_id: UUID):
     return db.query(models.Task).filter(models.Task.task_id == task_id).one_or_none()
+
+
+def update_task(db: Session, task_id: UUID, task: schemas.TaskUpdate):
+    db_task = db.query(models.Task).filter(models.Task.task_id == task_id).one()
+    if task.title is not None:
+        db_task.title = task.title
+    if task.description is not None:
+        db_task.description = task.description
+    if task.deadline is not None:
+        db_task.deadline = task.deadline
+    db.commit()
+
+
+def delete_task(db: Session, task_id: UUID):
+    db_task = db.query(models.Task).filter(models.Task.task_id == task_id).one()
+    db.delete(db_task)
+    db.commit()
